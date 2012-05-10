@@ -1,8 +1,10 @@
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <unistd.h>
+#include <assert.h>
 
 #include "lock-free-fifo.h"
+
 
 unsigned int rdiff(int w_cnt, int r_cnt)
 {
@@ -14,14 +16,12 @@ unsigned int rdiff(int w_cnt, int r_cnt)
     unsigned int ret = 0;
     
     if (wf == rf) { 
-        /* Both counters are on the same cycle */
         if (wc >= rc) {
             ret = (unsigned int)(wc - rc);
         }
         else {
-            /* This should never happen? */
-            fprintf(stderr, "OOPS: I think we are in deep $hit. Exiting...\n");
-            exit(-1);
+            /* We should never reach here? */
+            assert(1 == 0);
         }
     }
     else {
@@ -55,7 +55,7 @@ unsigned int wdiff(int w_cnt, int r_cnt)
 }
 
 
-void read_fifo(void *pos, void *value, unsigned int len, unsigned int fifo_size, useconds_t period) 
+void read_fifo(void *pos, void *value, unsigned int len, unsigned int fifo_size, unsigned long period) 
 {
     int i;
     volatile int *fifo = (int *) pos;
@@ -63,6 +63,7 @@ void read_fifo(void *pos, void *value, unsigned int len, unsigned int fifo_size,
     int w_cnt = fifo[0];
     
     while ( w_cnt == r_cnt || rdiff(w_cnt,r_cnt) < len ) { 
+        fprintf(stdout, "FIFO is empty\n");
         usleep(period); 
         w_cnt = fifo[0]; 
     }
@@ -81,7 +82,7 @@ void read_fifo(void *pos, void *value, unsigned int len, unsigned int fifo_size,
     fifo[1] = r_cnt;
 } 
 
-void write_fifo(void *pos, void *value, unsigned int len, unsigned int fifo_size, useconds_t period)
+void write_fifo(void *pos, void *value, unsigned int len, unsigned int fifo_size, unsigned long period)
 {
     int i;
     volatile int *fifo = (int *) pos;
@@ -89,7 +90,7 @@ void write_fifo(void *pos, void *value, unsigned int len, unsigned int fifo_size
     int r_cnt = fifo[1];
     
     while ( r_cnt == (w_cnt ^ 0x80000000) || wdiff(w_cnt, r_cnt) < len ) { 
-        printf("FIFO is full\n");
+        fprintf(stdout, "FIFO is full\n");
         usleep(period); 
         r_cnt = fifo[1]; 
     }

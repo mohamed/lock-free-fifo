@@ -6,4 +6,8 @@ Using it
 ========
 Simply include `lock-free-fifo.h` and `lock-free-fifo.c` in your project. To see how to use them, look at the test cases `test1.c` and `test2.c`
 
+Compiling it
+============
+`Makefile` uses clang analyzer to check the build process. Currently, there is one warning related to `usleep` which is not defined in C99. 
+
 

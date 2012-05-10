@@ -1,9 +1,13 @@
 
 #include <stdio.h>
 #include <pthread.h>
+#include <unistd.h>
 #include <assert.h>
 
 #include "lock-free-fifo.h"
+
+#define PERIOD 10000
+#define SECOND 1000000
 
 #define N 64
 
@@ -18,7 +22,7 @@ void *thread1(void *args)
 {
     static int c = 0;
     int buf[1];
-    useconds_t period = 10000;
+    unsigned long period = PERIOD;
 
     while (1) {
         buf[0] = c;
@@ -31,7 +35,7 @@ void *thread1(void *args)
 void *thread2(void *args)
 {
     int buf[1];
-    useconds_t period = 10000;
+    unsigned long period = PERIOD;
     
     while (1) {
         read_fifo((void *)msg_buf1, (void *)buf, sizeof_token(buf), sizeof_fifo(int,N), period);
@@ -45,7 +49,7 @@ void *thread3(void *args)
 {
     int val;
     static int exp = 0;
-    useconds_t period = 10000;
+    unsigned long period = PERIOD;
     
     while (1) {
         read_fifo((void *)msg_buf2, (void *)&val, sizeof_token(val), sizeof_fifo(int,N), period); 
@@ -69,7 +73,7 @@ int main()
     pthread_create( &t[2], NULL, thread3, NULL);
     
     while (1) {
-        usleep(1000000);
+        sleep(SECOND);
         printf("Hello from main\n");
     }
         
