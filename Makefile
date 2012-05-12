@@ -1,17 +1,30 @@
 
-all: clean build run
+CC		:= gcc
+CLANG_ANALYZER	:= scan-build
+FLAGS		:= -std=c99  -Wall -pedantic -Os -Wl,-s
+LIBS		:= -lpthread
+
+
+all: clean build
 
 clean:
+	rm -f *.s
+	rm -f *.i
 	rm -f *.o
+	rm -f *.map
 	rm -f test1
 	rm -f test2
+	rm -f test3
 
 build:
-	scan-build gcc -std=c99 -ansi -Wall -pedantic -c lock-free-fifo.c
-	scan-build gcc -std=c99 -ansi -Wall -pedantic -lpthread lock-free-fifo.c test1.c -o test1
-	scan-build gcc -std=c99 -ansi -Wall -pedantic -lpthread lock-free-fifo.c test2.c -o test2
-	strip -s test1
-	strip -s test2
+	$(CLANG_ANALYZER) $(CC) $(FLAGS) -c lock-free-fifo.c
+	$(CLANG_ANALYZER) $(CC) $(FLAGS) $(LIBS) lock-free-fifo.o test1.c -o test1
+	$(CLANG_ANALYZER) $(CC) $(FLAGS) $(LIBS) lock-free-fifo.o test2.c -o test2
+	$(CLANG_ANALYZER) $(CC) $(FLAGS) $(LIBS) lock-free-fifo.o test3.c -o test3
 
-run:
+run1: build
 	./test1
+run2: build
+	./test2
+run3: build
+	./test3

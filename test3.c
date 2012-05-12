@@ -9,7 +9,7 @@
 #define PERIOD 10000
 #define SECOND 1000000
 
-#define N 64
+#define N 8
 
 #define sizeof_fifo(T,N) N*((sizeof(T)+(sizeof(T)%4)+3)>>2)
 #define sizeof_token(T) ((sizeof(T)+(sizeof(T)%4)+3)/4)
@@ -52,7 +52,7 @@ void *thread3(void *args)
 {
 	int val;
 	static int exp = 0;
-	unsigned long period = PERIOD/2;
+	unsigned long period = PERIOD;
 	
 	while (1) {
 		read_fifo((void *)msg_buf2, (void *)&val, sizeof_token(val), sizeof_fifo(int,N), period); 
