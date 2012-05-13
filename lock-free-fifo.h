@@ -5,21 +5,27 @@
 #define REG_MASK	0x7FFFFFFF
 #define MAX_BUF_SIZE	REG_MASK
 
-#define R(x)		(x & REG_MASK)
-#define F(x)		(x & FLAG_MASK)
+#define reg(x)	(x & REG_MASK)
+#define flag(x)	(x & FLAG_MASK)
+#define UI	(unsigned int)
 
-#define rdiff(w_cnt,r_cnt)	(F(w_cnt) == F(r_cnt) ? \
-					( R(w_cnt) >= R(r_cnt) ? (unsigned int) (R(w_cnt) - R(r_cnt)) : 0 ) \
-					: (unsigned int) (R(w_cnt) - R(r_cnt) + MAX_BUF_SIZE ))
+#define rdiff(w,r)	(flag(w) == flag(r) ? \
+			( reg(w) >= reg(r) ? \
+			  	UI (reg(w) - reg(r)) \
+			  	: 0 ) \
+			: UI (reg(w) - reg(r) + MAX_BUF_SIZE ))
 
-#define wdiff(w_cnt,r_cnt)	(F(w_cnt) == F(r_cnt) ? \
-					(unsigned int) (REG_MASK - wc) \
-					: (R(w_cnt) > R(r_cnt) ? (unsigned int) (R(w_cnt) - R(r_cnt)) \
-								: (unsigned int)(R(r_cnt) - R(w_cnt))))
+#define wdiff(w,r)	(flag(w) == flag(r) ? \
+			UI (REG_MASK - wc) \
+			: (reg(w) > reg(r) ? \
+				UI (reg(w) - reg(r)) \
+				: UI(reg(r) - reg(w))))
 
 
-void read_fifo(void *pos, void *value, unsigned int len, unsigned int fifo_size, unsigned long period);
-void write_fifo(void *pos, void *value, unsigned int len, unsigned int fifo_size, unsigned long period);
+void read_fifo(void *pos, void *value, unsigned int len, 
+		unsigned int fifo_size, unsigned long period);
+void write_fifo(void *pos, void *value, unsigned int len, 
+		unsigned int fifo_size, unsigned long period);
 
 
 #endif

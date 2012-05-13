@@ -1,7 +1,7 @@
 
-CC		:= gcc
+CC		:= clang 
 CLANG_ANALYZER	:= scan-build
-FLAGS		:= -std=c99  -Wall -pedantic -Os -Wl,-s
+FLAGS		:= -std=c99  -Wall -pedantic -Os -Wl,-s #-save-temps
 LIBS		:= -lpthread
 
 
