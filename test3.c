@@ -1,7 +1,6 @@
 
 #include <stdio.h>
 #include <pthread.h>
-#include <unistd.h>
 #include <assert.h>
 
 #include "lock-free-fifo.h"
@@ -30,7 +29,7 @@ void *thread1(void *args)
 		buf[1] = c;
 		c++;
 		write_fifo((void *)msg_buf1, (void *)buf, sizeof_token(buf), sizeof_fifo(int,N), period);
-		usleep(period);
+		nsleep(0, period);
 	}   
 }
 
@@ -44,7 +43,7 @@ void *thread2(void *args)
 		buf[0] = buf[0] * 2;
 		buf[1] = buf[1] * 2;
 		write_fifo((void *)msg_buf2, (void *)buf, sizeof_token(buf), sizeof_fifo(int,N), period);
-		usleep(period);
+		nsleep(0, period);
 	}
 }
 
@@ -59,7 +58,7 @@ void *thread3(void *args)
 		assert (val == exp);
 		exp += 2;
 		fprintf(stdout,"Thread 3: Read value = %d\n", val);
-		usleep(period);
+		nsleep(0, period);
 	}
 }
 
@@ -76,7 +75,7 @@ int main()
 	pthread_create( &t[2], NULL, thread3, NULL);
 	
 	while (1) {
-		usleep(SECOND);
+		nsleep(1, 0);
 		printf("Hello from main\n");
 	}
 		
